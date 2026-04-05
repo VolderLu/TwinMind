@@ -1,15 +1,40 @@
 {
   "version": 2,
   "stats": {
-    "total_cards": 0,
-    "total_links": 0,
+    "total_cards": 2,
+    "total_links": 1,
     "total_inbox": 0,
     "total_actions": 0,
     "total_tasks_standalone": 0,
-    "domains": {},
-    "last_updated": "2026-01-01T00:00:00Z"
+    "domains": {
+      "knowledge-management": 2
+    },
+    "last_updated": "2026-04-05T06:30:00Z"
   },
-  "notes": {},
+  "notes": {
+    "20260405062517": {
+      "title": "卡片盒筆記法",
+      "path": "Cards/zettelkasten.md",
+      "type": "concept",
+      "status": "growing",
+      "domain": ["knowledge-management"],
+      "summary": "Zettelkasten 以原子化筆記、雙向連結、湧現結構為三大原則的知識管理方法，由 Luhmann 發展，強調連結優先於分類，讓知識網路自然生長出意料之外的洞見",
+      "links_to": ["20260405062834"],
+      "linked_from": ["20260405062834"],
+      "link_count": 1
+    },
+    "20260405062834": {
+      "title": "PARA 方法",
+      "path": "Cards/para-method.md",
+      "type": "concept",
+      "status": "growing",
+      "domain": ["knowledge-management"],
+      "summary": "Tiago Forte 提出的數位資訊組織框架，以可行動性（actionability）為分類第一原則，將所有資訊分為 Projects/Areas/Resources/Archives 四層，與 Zettelkasten 互補",
+      "links_to": ["20260405062517"],
+      "linked_from": ["20260405062517"],
+      "link_count": 1
+    }
+  },
   "projects": {},
   "areas": {},
   "inbox": {},
