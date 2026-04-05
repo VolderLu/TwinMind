@@ -1,0 +1,42 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/validate-card.js\"",
+            "timeout": 30,
+            "type": "command"
+          },
+          {
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/validate-inbox.js\"",
+            "timeout": 30,
+            "type": "command"
+          },
+          {
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/validate-action.js\"",
+            "timeout": 30,
+            "type": "command"
+          },
+          {
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/validate-project-files.js\"",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit"
+      },
+      {
+        "hooks": [
+          {
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/validate-index.js\"",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "Write|Edit"
+      }
+    ]
+  },
+  "includeGitInstructions": false
+}

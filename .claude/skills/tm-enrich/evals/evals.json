@@ -1,0 +1,97 @@
+{
+  "skill_name": "tm-enrich",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "basic-trigger",
+      "prompt": "enrich active-recall",
+      "expected_output": "Card active-recall enriched from seed to growing with all 5 sections: concept explanation, origin/story, examples, related terms (3 layers), and practical application. vault-index.json updated with new status and links. MOC emoji updated.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "a1",
+          "text": "Card status upgraded from seed to growing",
+          "check": "frontmatter status field equals 'growing'"
+        },
+        {
+          "id": "a2",
+          "text": "All 5 content sections present (概念解說, 由來/故事, 案例, 相關名詞, 應用方式)",
+          "check": "card contains H2 sections covering all five dimensions"
+        },
+        {
+          "id": "a3",
+          "text": "相關名詞 section has all 3 subsections (抽象層, 橫向探索, 拆解層)",
+          "check": "card contains three H3 subsections under 相關名詞"
+        },
+        {
+          "id": "a4",
+          "text": "vault-index.json entry status updated to growing",
+          "check": "vault-index entry for active-recall shows status: growing"
+        },
+        {
+          "id": "a5",
+          "text": "Existing vault cards referenced with wikilinks in 相關名詞",
+          "check": "at least one [[wikilink]] appears in 相關名詞 section"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "focus-param",
+      "prompt": "enrich feynman-technique, focus: 常見失敗和避免方法",
+      "expected_output": "Card feynman-technique enriched with elevated depth on failure modes in the 應用方式 or 案例 sections. Focus parameter visibly shapes content — failure modes should be more prominent than in a no-focus enrich.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "b1",
+          "text": "Card status upgraded from seed to growing",
+          "check": "frontmatter status field equals 'growing'"
+        },
+        {
+          "id": "b2",
+          "text": "Failure modes / common mistakes receive substantive treatment (not just a brief mention)",
+          "check": "card has at least one dedicated subsection or multi-sentence treatment of failure modes"
+        },
+        {
+          "id": "b3",
+          "text": "All 5 content sections still present despite focus constraint",
+          "check": "focus does not cause other dimensions to be dropped"
+        },
+        {
+          "id": "b4",
+          "text": "vault-index.json updated correctly",
+          "check": "vault-index entry for feynman-technique shows status: growing"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "chinese-trigger",
+      "prompt": "深化 knowledge-management-as-gardening",
+      "expected_output": "Skill triggers correctly from Chinese input '深化'. Card knowledge-management-as-gardening (insight type, not concept) enriched with all 5 sections adapted for an insight-type card.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "c1",
+          "text": "Skill correctly identifies target card from Chinese trigger",
+          "check": "knowledge-management-as-gardening card is the one modified"
+        },
+        {
+          "id": "c2",
+          "text": "Card status upgraded from seed to growing",
+          "check": "frontmatter status field equals 'growing'"
+        },
+        {
+          "id": "c3",
+          "text": "Insight-type card handled appropriately (由來 section adapted to insight's context)",
+          "check": "由來 section exists and is contextually appropriate for an insight (not forced into academic origin story format)"
+        },
+        {
+          "id": "c4",
+          "text": "vault-index.json updated correctly",
+          "check": "vault-index entry for knowledge-management-as-gardening shows status: growing"
+        }
+      ]
+    }
+  ]
+}

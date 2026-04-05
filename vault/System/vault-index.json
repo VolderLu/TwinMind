@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "stats": {
+    "total_cards": 0,
+    "total_links": 0,
+    "total_inbox": 0,
+    "total_actions": 0,
+    "total_tasks_standalone": 0,
+    "domains": {},
+    "last_updated": "2026-01-01T00:00:00Z"
+  },
+  "notes": {},
+  "projects": {},
+  "areas": {},
+  "inbox": {},
+  "standalone_actions": {},
+  "standalone_tasks": []
+}
