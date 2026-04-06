@@ -66,13 +66,15 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 **Step 5 — 行動層掃描**
 
 從 `vault-index.json` 讀取以下資料：
+
 - `inbox` 中 `status == "pending"` 的項目數量
 - pending 且 `created` 距今超過 `config.md` 的 `memo_stale_days`（預設 7 天）的 memo 數
 - `standalone_actions` 中 `status == "active"` 且建立超過 `action_stale_days`（預設 14 天）的 action 數
 - `projects` 中 `status == "active"` 且 deadline 在 7 天內的專案數
 
 若任一 > 0，主動提示使用者，例如：
-```
+
+```text
 📥 3 個 inbox 待處理（1 個超過 7 天）
 ⏰ 1 個專案本週到期（發布 TwinMind, 04-10）
 要先 triage 嗎？
@@ -140,7 +142,7 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 
 1. **生命週期動詞**：「建立專案」「create project」「暫停」「pause」「恢復」「resume」「完成」「complete」「歸檔」「archive」
 2. **進度紀錄**：「log for」「進度」「紀錄」
-3. **專案查詢**：「list projects」「列出專案」「show me <project-name>」「專案狀況」
+3. **專案查詢**：「list projects」「列出專案」「show me `<project-name>`」「專案狀況」
 4. **卡片-專案連結**：「link ... to project」「連結到專案」「unlink」「取消連結」
 
 注意：卡片連結至**專案**歸類為 PROJECT，不是 CONNECT。提及專案名稱的 action/task 操作也歸 PROJECT（專案內由 tm:project 處理）。
@@ -196,6 +198,7 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 3. **指定關係類型**：「X 跟 Y 的關係是 analogous」
 
 排除規則：
+
 - 僅提及一張卡片 → 可能是 QUERY 或 CAPTURE，不歸類為 CONNECT
 - 目標為專案（非卡片）→ 歸類為 PROJECT
 
@@ -208,17 +211,20 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 每個意圖類別內，AI 根據輸入內容判斷具體操作（子意圖）：
 
 **CAPTURE：**
+
 - 建立新卡片（預設）
 - 更新既有卡片（使用者指名既有卡片並提供修改內容）
 - 刪除卡片（使用者明確要求刪除）
 
 **INBOX：**
+
 - 建立 memo / idea
 - 升格（7 種路徑：→ Card / Action / Task / Project 等）
 - 捨棄
 - 列出 pending 項目
 
 **ACTION：**
+
 - 建立獨立行動
 - 完成獨立行動（含反思鉤）
 - 列出獨立行動
@@ -226,12 +232,14 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 - 升格為專案
 
 **TASK：**
+
 - 新增獨立任務
 - 完成獨立任務
 - 刪除獨立任務
 - 列出獨立任務
 
 **PROJECT：**
+
 - 建立 / 暫停 / 恢復 / 完成（含反思鉤）/ 歸檔專案
 - 新增進度紀錄
 - 連結或取消連結卡片至專案
@@ -239,10 +247,12 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 - 專案內 task CRUD（新增/完成/刪除）
 
 **AREA：**
+
 - 建立 / 更新 / 停用 / 重新啟用 Area
 - 關聯/取消關聯 Project 或 Card
 
 **QUERY：**
+
 - 關鍵字搜尋
 - 依 domain 篩選
 - 依 type / status 篩選
@@ -251,6 +261,7 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 - Inbox / Action / Task / Area 查詢
 
 **REVIEW：**
+
 - 知識庫摘要（Vault Summary）
 - 索引驗證
 - 索引重建
@@ -261,6 +272,7 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 - Action 過期檢查
 
 **CONNECT：**
+
 - 建立連結（可含關係類型）
 - 移除連結
 
@@ -359,6 +371,7 @@ Changelog 採用月度切檔（`vault/System/changelog-YYYY-MM.md`）+ append-on
 每個 subagent 都接收結構化 prompt，包含：
 
 **Post-op payload：**
+
 ```json
 {
   "task": "post-op",
@@ -401,6 +414,7 @@ Main agent 解析回傳訊息判斷成功或失敗。回傳訊息不包含 file 
 **Main agent 必須完成所有 vault-index.json 寫入後，才能啟動 subagent。** 確保 subagent 讀到一致的狀態。
 
 序列：
+
 1. Main agent 寫入主要 artifact（卡片、專案檔案等）
 2. Main agent 更新 vault-index.json
 3. Main agent 回應使用者
@@ -418,10 +432,15 @@ Main agent 解析回傳訊息判斷成功或失敗。回傳訊息不包含 file 
 ### Hook 自動驗證
 
 PostToolUse hooks 會在以下寫入操作後自動執行驗證：
+
 - **`Cards/*.md` / `Sources/*.md` 寫入後** → 驗證 frontmatter 必填欄位和 enum 合法值
 - **`PARA/Inbox/*.md` 寫入後** → 驗證 inbox item frontmatter（type/status enum）
 - **`PARA/Actions/*.md` 寫入後** → 驗證 standalone action frontmatter（id/title/status/created）
 - **`PARA/Projects/*/actions.md|tasks.md` 寫入後** → 驗證 project 欄位匹配目錄名
 - **`vault-index.json` 寫入後** → 驗證 JSON 合法性和九項一致性不變式（total_cards、total_links、雙向連結、domain 計數、version、inbox count、actions count、standalone tasks count）
 
-驗證失敗會 回報錯誤信號（exit code 2），但檔案已被寫入（PostToolUse 是事後偵測控制，非事前攔截）。**AI 收到 hook 失敗時，須��即讀回檔案確認實際狀態，再以單次 corrective Edit 修正不一致。** AI 不需手動執行一致性驗證——hooks 已自��處理。
+驗證失敗會 回報錯誤信號（exit code 2），但檔案已被寫入（PostToolUse 是事後偵測控制，非事前攔截）。**AI 收到 hook 失敗時，須立即讀回檔案確認實際狀態，再以單次 corrective Edit 修正不一致。** AI 不需手動執行一致性驗證——hooks 已自動處理。
+
+## Markdown 注意事項
+
+- 在 **Markdown body text** 中，非 tag 用途的 `#` 需跳脫為 `\#` 或用 backtick 包裹。JSON 檔案和 YAML frontmatter 中，`#` 不需跳脫。常見非 tag 場景：程式語言名稱（`C#`、`F#`）、編號（`#1`、`#42`）、issue/PR 引用（`#123`）。

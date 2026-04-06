@@ -67,9 +67,11 @@ claude
 
 ### 專案結構
 
-```
+```text
 TwinMind/
 ├── CLAUDE.md                 # AI 操作指南與意圖路由規則
+├── scripts/
+│   └── fetch-title.mjs       # 取得網頁標題
 ├── .claude/
 │   ├── skills/               # 12 個模組化 Skill（知識、行動、維護）
 │   ├── hooks/                # 5 個驗證 Hook（自動確保資料一致性）
