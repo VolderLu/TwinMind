@@ -400,5 +400,9 @@ PostToolUse hooks 會在以下寫入操作後自動執行驗證：
 
 ## Markdown 注意事項
 
-- **連結偏好：** 使用 `[title](url)` 格式。若有需要，可以使用 `node scripts/fetch-title.mjs <url1> [url2] ...` 一次取得多個頁面標題。
+- **連結偏好：** 使用 `[title](url)` 格式。依以下優先序決定 title：
+  1. 內文已提供標題 → 直接使用
+  2. 執行 `node scripts/fetch-title.mjs <url1> [url2] ...` 取得實際標題
+  3. 從 URL slug 推測並翻譯為 locale 語言（如 `/my-great-post` → `我的好文章`）
+  4. 以上皆不可行 → 使用純連結 `<url>`
 - **Tag 跳脫：** `#word` 在 Obsidian 中為 tag。非 tag 用途的 `#` 需跳脫為 `\#` 或用 backtick 包裹。常見非 tag 場景：程式語言名稱（`C#`、`F#`）、編號（`#1`、`#42`）、issue/PR 引用（`#123`）。
