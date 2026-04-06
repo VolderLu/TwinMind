@@ -110,13 +110,23 @@ function fetchTitle(url, redirects = 0) {
   });
 }
 
+function fetchTitleWithFallback(url) {
+  return fetchTitle(url).catch((primaryErr) =>
+    fetchTitle(`https://web.archive.org/web/2/${url}`).catch((wbErr) => {
+      throw new Error(`${primaryErr.message}; Wayback: ${wbErr.message}`);
+    }),
+  );
+}
+
 const urls = process.argv.slice(2);
 if (urls.length === 0) {
   process.stderr.write("Usage: node scripts/fetch-title.mjs <url> [url2] ...\n");
   process.exit(1);
 }
 
-const results = await Promise.allSettled(urls.map((u) => fetchTitle(u)));
+const results = await Promise.allSettled(
+  urls.map((u) => fetchTitleWithFallback(u)),
+);
 
 for (let i = 0; i < urls.length; i++) {
   const r = results[i];
