@@ -8,22 +8,22 @@ updated: null
 
 > 知識面入口。行動面請見 [[PARA/Dashboard|Dashboard]]。
 
-## Active Projects
+## 進行中專案
 
-(No active projects yet)
+尚無進行中專案
 
-## Areas of Focus
+## 關注領域
 
-(No areas yet)
+尚無關注領域
 
-## Knowledge Map
+## 知識地圖
 
-(No MOCs yet — auto-created when a domain reaches the card threshold)
+尚未建立知識地圖（需累積至少 5 張同領域卡片）
 
-## Recently Updated
+## 最近新增
 
-(No cards yet)
+（尚無卡片）
 
-## Seeds to Develop
+## 待發展 (seeds)
 
-(No seeds yet)
+所有卡片都已在成長中！
