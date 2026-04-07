@@ -9,7 +9,7 @@ metadata:
 
 處理使用者明確要求的手動連結操作——建立或解除兩張卡片之間的連結。與 `twinmind:capture` 的自動連結推理不同，這裡是使用者主動指定要連結哪兩張卡片。
 
-關係類型、分類規則、Connections 格式和反向對照表的完整定義，請讀取 `references/link-inference.md`（位於 capture skill 目錄下，與 capture 共用同一套連結系統）。
+關係類型、分類規則、Connections 格式和反向對照表的完整定義，請讀取 `${CLAUDE_PLUGIN_ROOT}/skills/capture/references/link-inference.md`（與 capture 共用同一套連結系統）。
 
 一致性驗證由 PostToolUse hooks 自動處理。完成操作後透過 Bash tool 執行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs --layer knowledge` 觸發 post-op pipeline。
 
@@ -33,9 +33,9 @@ node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs --layer knowledge --event '{"even
 2. 找不到任一卡片 → 回報「未找到匹配的卡片」，列出可能候選
 3. 關係類型判斷：
    - 使用者指定了（如「關係是 analogous」）→ 使用指定類型
-   - 未指定 → 依 `references/link-inference.md` 的分類優先序自動推斷
+   - 未指定 → 依 `${CLAUDE_PLUGIN_ROOT}/skills/capture/references/link-inference.md` 的分類優先序自動推斷
 4. 說明文字：使用者提供則用，未提供則 AI 生成一句話
-5. 執行連結建立程序（見 `references/link-inference.md` 的「建立連結程序」）：
+5. 執行連結建立程序（見 `${CLAUDE_PLUGIN_ROOT}/skills/capture/references/link-inference.md` 的「建立連結程序」）：
    - 寫入源卡片 `## Connections`（移除 placeholder 若有）
    - 寫入目標卡片反向連結（依反向對照表）
    - 透過 Bash tool 執行程式化索引更新（**不得直接 Edit vault-index.json**）：
