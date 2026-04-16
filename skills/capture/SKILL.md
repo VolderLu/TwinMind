@@ -1,13 +1,13 @@
 ---
 name: capture
-description: "TwinMind card engine. Use this whenever the user shares a thought, idea, knowledge, question, or source reference that should be captured as a card. Also handles card updates and deletions. Covers the full lifecycle: type classification, duplicate detection, card creation, automatic link inference to existing cards, and index updates. If the user says something that looks like knowledge worth remembering — this is the skill to use."
+description: "TwinMind card engine. Use this whenever the user shares a thought, idea, knowledge, question, or source reference that should be captured as a card. Also handles card updates and deletions. Covers the full lifecycle: type classification, duplicate detection, card creation, automatic link inference to existing cards, and index updates. If the user says something that looks like knowledge worth remembering — this is the skill to use. For vague or unformed thoughts, route to twinmind:inbox instead."
 license: MIT
 metadata:
   author: twinmind
   version: "1.0"
 ---
 
-捕捉使用者的想法、知識、問題或來源引用，轉化為知識卡片。建卡後自動尋找並建立與既有卡片的連結——這是知識庫產生價值的核心機制，因為孤立的卡片遠不如互相連結的知識網路有用。
+捕捉使用者的想法、知識、問題或來源引用，轉化為知識卡片。建卡後自動尋找並建立與既有卡片的連結。
 
 一致性驗證由 PostToolUse hooks 自動處理，不需手動檢查。完成操作後透過 Bash tool 執行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs` 觸發 post-op pipeline（changelog、MOC、Home 更新）。連結推理由 main agent inline 執行（不使用 subagent）。
 
@@ -61,15 +61,10 @@ related_projects: []
 
 若使用者輸入包含外部 URL（HTTP/HTTPS），在撰寫 body 前批次取得標題：
 
-1. 掃描使用者原始輸入中所有的外部 URL（行內、腳注定義、參考清單等，不包含 wiki-link），提取唯一值；不論該 URL 是否被正文引用，一律納入
+1. 掃描使用者原始輸入中所有外部 URL（行內、腳注、參考清單，不含 wiki-link），提取唯一值
 2. 若無 URL → 跳過此步驟
-3. 檢查使用者輸入中哪些 URL 已有明確標題（如「這篇《Rust 指南》 `https://...`」），直接寫入對照表
-4. 對**剩餘**沒有使用者標題的 URL 批次執行：`node ${CLAUDE_PLUGIN_ROOT}/scripts/fetch-title.mjs <url1> [url2] ...`
-5. 合併結果建立 url→title 對照表，優先序：
-   - 使用者標題（步驟 3）
-   - fetch 標題（步驟 4）
-   - URL path slug 推測並翻譯為 locale 語言（如 `/my-great-post` → `我的好文章`）。slug 推測的標題前加 `~` 標記（如 `[~我的好文章](url)`），讓讀者知道這不是頁面原始標題
-   - 以上皆不可行 → 留空（body 撰寫時用裸連結 `<url>`）
+3. 已有使用者標題的 URL 直接寫入對照表；其餘批次執行：`node ${CLAUDE_PLUGIN_ROOT}/scripts/fetch-title.mjs <url1> [url2] ...`
+4. 合併結果建立 url→title 對照表，優先序：使用者標題 > fetch 標題 > slug 推測（翻譯為 locale 語言，前綴 `~` 標記） > 裸連結 `<url>`
 
 對照表供 Step 5 body 撰寫使用。Fetch 失敗不阻擋建卡流程。
 

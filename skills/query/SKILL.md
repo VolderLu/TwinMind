@@ -1,6 +1,6 @@
 ---
 name: query
-description: "TwinMind query engine: index queries, card recommendation"
+description: "Searches stored cards by domain, type, status, or keyword. Recommends semantically related cards using AI language understanding. Queries inbox, action, task, area, and project data from the vault index. Use when the user asks to search, find, list, filter, or browse cards, or wants recommendations for related content. Triggers: '搜尋', '找', 'search', 'find', '列出', 'list', '有沒有', '跟X相關的', '有幾張', 'how many', '統計'."
 license: MIT
 metadata:
   author: twinmind
@@ -11,7 +11,7 @@ TwinMind 查詢引擎。處理所有索引查詢和卡片推薦操作。
 
 **本 skill 為唯讀操作，不修改任何檔案，不需調用 `/twinmind:post-op`。**
 
-所有查詢操作皆從 `vault-index.json` 的記憶體內資料執行，不掃描檔案系統。
+所有查詢操作皆從 `vault-index.json` 的記憶體內資料執行，不掃描檔案系統。共通模式：遍歷 `notes` → 篩選條件 → 回傳匹配欄位 → 空態提示。
 
 ## 索引查詢
 
@@ -73,7 +73,7 @@ TwinMind 查詢引擎。處理所有索引查詢和卡片推薦操作。
 
 遍歷 `vault-index.json` 中所有 `notes`，對每筆 note 進行語意比對：
 
-1. 將查詢輸入與每筆 note 的 `title`、`summary`、`domain` 進行 AI 語意比較
+1. 將查詢輸入與每筆 note 的 `title`、`summary`、`domain` 進行語意比較（依賴 Claude 的語言理解能力判斷概念相似度，非向量嵌入）
 2. 判斷是否存在語意關聯（概念重疊、主題相關、跨域類比等）
 3. 按相關性排序：title 相似度 > summary 內容重疊 > 共享 domain 數量
 
