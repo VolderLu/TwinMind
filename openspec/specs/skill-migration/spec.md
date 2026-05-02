@@ -11,17 +11,27 @@ Each of the 11 existing skills SHALL be moved from `.claude/skills/tm-<name>/SKI
 
 ### Requirement: Script path references updated
 
-All references to `node scripts/` in skill files SHALL be updated to `node ${CLAUDE_PLUGIN_ROOT}/scripts/`. This includes calls to `post-op.mjs`, `update-index.mjs`, and `fetch-title.mjs`.
+All references to script invocation in skill files SHALL use the project-relative shim form `node .claude/twinmind/bin/tm-<name>.mjs`. The legacy form `node ${CLAUDE_PLUGIN_ROOT}/scripts/<name>.mjs` SHALL NOT appear in any non-archived skill file or in `router-prompt.md`. The shims under `.claude/twinmind/bin/` are materialized by the SessionStart hook (see capabilities `session-start-hook` and `plugin-shim`).
 
 #### Scenario: No bare script references remain
 
-- **WHEN** searching all `skills/*/SKILL.md` files for the pattern `node scripts/`
+- **WHEN** searching all `skills/*/SKILL.md` files for the pattern `node ${CLAUDE_PLUGIN_ROOT}/scripts/` or any other path ending in `/scripts/<name>.mjs` outside of prose explanations of the legacy layout
 - **THEN** zero matches are found
 
-#### Scenario: Plugin root references present
+#### Scenario: No legacy plugin-root references in skills
 
-- **WHEN** searching all `skills/*/SKILL.md` files for the pattern `${CLAUDE_PLUGIN_ROOT}/scripts/`
-- **THEN** matches are found in skills that invoke scripts (capture, connect, action, task, area, inbox, project, review, post-op)
+- **WHEN** searching all `skills/*/SKILL.md` files and `router-prompt.md` for the substring `${CLAUDE_PLUGIN_ROOT}`
+- **THEN** zero matches are found
+
+#### Scenario: Shim references present
+
+- **WHEN** searching all skills that invoke scripts (`capture`, `connect`, `action`, `task`, `area`, `inbox`, `project`, `review`, `post-op`) and `router-prompt.md` for the pattern `node .claude/twinmind/bin/tm-`
+- **THEN** matches are found in every one of those files
+
+#### Scenario: Cross-skill file references use skill names
+
+- **WHEN** any skill needs to direct the model to read another skill's references
+- **THEN** the text refers to the target skill by its `twinmind:<name>` identifier rather than constructing a `${CLAUDE_PLUGIN_ROOT}/skills/...` path
 
 ### Requirement: Skill internal cross-references updated
 

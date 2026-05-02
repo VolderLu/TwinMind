@@ -9,14 +9,14 @@ metadata:
 
 管理知識庫中的專案——從建立到歸檔的完整生命週期。專案是行動導向的容器，將相關卡片組織在共同目標下。與卡片（知識）不同，專案有明確的開始和結束。
 
-一致性驗證由 PostToolUse hooks 自動處理。狀態變更操作完成後透過 Bash tool 執行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs --layer action` 觸發 post-op pipeline。唯讀查詢不需要。
+一致性驗證由 PostToolUse hooks 自動處理。狀態變更操作完成後透過 Bash tool 執行 `node .claude/twinmind/bin/tm-post-op.mjs --layer action` 觸發 post-op pipeline。唯讀查詢不需要。
 
 ### Post-op 執行方式
 
 透過 Bash tool 執行：
 
 ```bash
-node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs --layer action --event '{"event_type":"<PROJECT_CREATED|PAUSED|RESUMED|COMPLETED|ARCHIVED|...>","event_context":{"project_id":"<name>","project_title":"<title>"}}'
+node .claude/twinmind/bin/tm-post-op.mjs --layer action --event '{"event_type":"<PROJECT_CREATED|PAUSED|RESUMED|COMPLETED|ARCHIVED|...>","event_context":{"project_id":"<name>","project_title":"<title>"}}'
 ```
 
 腳本同步執行，執行完成後再回應使用者。

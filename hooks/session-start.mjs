@@ -1,18 +1,21 @@
 #!/usr/bin/env node
 /**
- * session-start.mjs — SessionStart hook for TwinMind plugin.
+ * session-start.mjs: SessionStart hook for TwinMind plugin.
  *
  * Detects TwinMind projects by checking for TwinMind.md in the working directory.
- * If found, outputs router-prompt.md content to stdout for context injection.
+ * If found:
+ *   1. Materialize <cwd>/.claude/twinmind/{config.json,bin/*.mjs} so skills can
+ *      invoke plugin scripts via stable project-relative paths.
+ *   2. Emit router-prompt.md content to stdout for context injection.
  *
  * Cross-platform: uses only Node.js built-ins, no shell dependencies.
  */
 
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { writeShimLayout } from './lib/shim-writer.mjs';
 
 async function main() {
-  // Read hook input from stdin (JSON with cwd field)
   const chunks = [];
   for await (const chunk of process.stdin) {
     chunks.push(chunk);
@@ -24,19 +27,23 @@ async function main() {
     process.exit(0);
   }
 
-  // Check if TwinMind.md exists in the working directory
   const configPath = join(cwd, 'TwinMind.md');
   if (!existsSync(configPath)) {
-    process.exit(0); // Not a TwinMind project — exit silently
+    process.exit(0);
   }
 
-  // Output router prompt to stdout (injected as Claude context)
   const pluginRoot = join(import.meta.dirname, '..');
-  const routerPath = join(pluginRoot, 'router-prompt.md');
 
-  if (existsSync(routerPath)) {
-    const content = readFileSync(routerPath, 'utf8');
+  const result = writeShimLayout({ pluginRoot, cwd });
+  if (!result.ok) {
+    process.stderr.write(`twinmind shim-writer: ${result.error.message}\n`);
+  }
+
+  try {
+    const content = readFileSync(join(pluginRoot, 'router-prompt.md'), 'utf8');
     process.stdout.write(content);
+  } catch (e) {
+    if (e.code !== 'ENOENT') throw e;
   }
 }
 

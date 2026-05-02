@@ -101,6 +101,7 @@ domains: []
 ```text
 my-brain/
 ├── TwinMind.md               # 設定檔（YAML frontmatter）
+├── .claude/twinmind/         # plugin 執行期產物（每次啟動自動生成，git 忽略）
 └── vault/                    # 知識庫本體（用 Obsidian 開啟此資料夾）
     ├── Home.md               # 知識庫首頁
     ├── Atlas/                # MOC（知識地圖，自動生成）
@@ -118,6 +119,8 @@ my-brain/
         ├── vault-index.json  # 知識庫索引（AI 的記憶）
         └── changelog-*.md    # 操作日誌
 ```
+
+`.claude/twinmind/` 由 SessionStart hook 在每次啟動時冪等寫入，內容是 plugin 路徑設定 (`config.json`) 與 AI 操作會用到的腳本 shim (`bin/tm-*.mjs`)。不需要手動維護，也不會被 commit。
 
 ## 知識庫的六大循環
 

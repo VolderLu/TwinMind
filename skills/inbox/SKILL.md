@@ -9,14 +9,14 @@ metadata:
 
 Inbox 是所有模糊輸入的安全網。人的大腦會在隨機時刻冒出想法——有些已成形，有些只是碎片。Inbox 的存在讓使用者不需要在靈感出現的那一刻決定「這是知識還是任務」，只要先記下來，之後再分類。
 
-一致性驗證由 PostToolUse hooks 自動處理。狀態變更操作完成後透過 Bash tool 執行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs` 觸發 post-op pipeline。唯讀查詢不需要。
+一致性驗證由 PostToolUse hooks 自動處理。狀態變更操作完成後透過 Bash tool 執行 `node .claude/twinmind/bin/tm-post-op.mjs` 觸發 post-op pipeline。唯讀查詢不需要。
 
 ### Post-op 執行方式
 
 透過 Bash tool 執行：
 
 ```bash
-node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs --layer <action|both> --event '{"event_type":"<INBOX_CREATED|INBOX_PROMOTED|INBOX_DISMISSED>","event_context":{"inbox_id":"<id>","inbox_text":"<text>","promoted_to":"<path 或 null>"}}'
+node .claude/twinmind/bin/tm-post-op.mjs --layer <action|both> --event '{"event_type":"<INBOX_CREATED|INBOX_PROMOTED|INBOX_DISMISSED>","event_context":{"inbox_id":"<id>","inbox_text":"<text>","promoted_to":"<path 或 null>"}}'
 ```
 
 升格為 Card 時用 `--layer both`，其餘用 `--layer action`。腳本同步執行，執行完成後再回應使用者。
