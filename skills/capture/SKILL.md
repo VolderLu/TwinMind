@@ -9,7 +9,7 @@ metadata:
 
 捕捉使用者的想法、知識、問題或來源引用，轉化為知識卡片。建卡後自動尋找並建立與既有卡片的連結——這是知識庫產生價值的核心機制，因為孤立的卡片遠不如互相連結的知識網路有用。
 
-一致性驗證由 PostToolUse hooks 自動處理，不需手動檢查。完成操作後透過 Bash tool 執行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs` 觸發 post-op pipeline（changelog、MOC、Home 更新）。連結推理由 main agent inline 執行（不使用 subagent）。
+一致性驗證由 PostToolUse hooks 自動處理，不需手動檢查。完成操作後透過 Bash tool 執行 `node .claude/twinmind/bin/tm-post-op.mjs` 觸發 post-op pipeline（changelog、MOC、Home 更新）。連結推理由 main agent inline 執行（不使用 subagent）。
 
 ## 建立卡片（CARD_CREATED）
 
@@ -64,7 +64,7 @@ related_projects: []
 1. 掃描使用者原始輸入中所有的外部 URL（行內、腳注定義、參考清單等，不包含 wiki-link），提取唯一值；不論該 URL 是否被正文引用，一律納入
 2. 若無 URL → 跳過此步驟
 3. 檢查使用者輸入中哪些 URL 已有明確標題（如「這篇《Rust 指南》 `https://...`」），直接寫入對照表
-4. 對**剩餘**沒有使用者標題的 URL 批次執行：`node ${CLAUDE_PLUGIN_ROOT}/scripts/fetch-title.mjs <url1> [url2] ...`
+4. 對**剩餘**沒有使用者標題的 URL 批次執行：`node .claude/twinmind/bin/tm-fetch-title.mjs <url1> [url2] ...`
 5. 合併結果建立 url→title 對照表，優先序：
    - 使用者標題（步驟 3）
    - fetch 標題（步驟 4）
@@ -112,10 +112,10 @@ related_projects: []
 
 ### Step 6 — 更新索引（程式化 CLI）
 
-透過 Bash tool 執行 `${CLAUDE_PLUGIN_ROOT}/scripts/update-index.mjs` 更新 `vault/System/vault-index.json`。**LLM 不得直接使用 Edit 或 Write tool 修改 vault-index.json。**
+透過 Bash tool 執行 `.claude/twinmind/bin/tm-update-index.mjs` 更新 `vault/System/vault-index.json`。**LLM 不得直接使用 Edit 或 Write tool 修改 vault-index.json。**
 
 ```bash
-node ${CLAUDE_PLUGIN_ROOT}/scripts/update-index.mjs add-card '{"id":"<ID>","title":"<title>","path":"<path>","type":"<type>","status":"seed","domain":["<domain>"],"summary":"<摘要>","links_to":["<Step 5.5 採納的目標 ID>"]}'
+node .claude/twinmind/bin/tm-update-index.mjs add-card '{"id":"<ID>","title":"<title>","path":"<path>","type":"<type>","status":"seed","domain":["<domain>"],"summary":"<摘要>","links_to":["<Step 5.5 採納的目標 ID>"]}'
 ```
 
 - `links_to` 為空陣列時仍需包含（`"links_to":[]`）
@@ -130,7 +130,7 @@ node ${CLAUDE_PLUGIN_ROOT}/scripts/update-index.mjs add-card '{"id":"<ID>","titl
 透過 Bash tool 執行：
 
 ```bash
-node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs --layer knowledge --event '{"event_type":"<CARD_CREATED|CARD_UPDATED|CARD_DELETED>","event_context":{"card_title":"<標題>","card_path":"<路徑>","domains":["<domain>"]}}'
+node .claude/twinmind/bin/tm-post-op.mjs --layer knowledge --event '{"event_type":"<CARD_CREATED|CARD_UPDATED|CARD_DELETED>","event_context":{"card_title":"<標題>","card_path":"<路徑>","domains":["<domain>"]}}'
 ```
 
 腳本同步執行。exit code 0 表示成功（stdout 印出 `post-op done | ...`），exit code 1 表示失敗（stderr 印出 `post-op failed | step=... | error: ...`）。失敗時告知使用者錯誤內容。執行完成後再回應使用者。
@@ -145,11 +145,11 @@ node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs --layer knowledge --event '{"even
 6. 透過 Bash tool 執行程式化索引更新（**不得直接 Edit vault-index.json**）：
 
    ```bash
-   node ${CLAUDE_PLUGIN_ROOT}/scripts/update-index.mjs update-card '{"id":"<ID>","<field>":"<value>"}'
+   node .claude/twinmind/bin/tm-update-index.mjs update-card '{"id":"<ID>","<field>":"<value>"}'
    ```
 
    payload 僅包含 `id` 和**實際變更的欄位**（title、type、status、domain、summary）。腳本自動處理 domain diff 計算（舊 domain -1 歸零刪 key、新 domain +1）和 `stats.last_updated` 更新。
-7. 執行 post-op（Bash tool，`node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs --layer knowledge --event '...'`，event_type 為 `CARD_UPDATED`，event_context 含變更摘要）
+7. 執行 post-op（Bash tool，`node .claude/twinmind/bin/tm-post-op.mjs --layer knowledge --event '...'`，event_type 為 `CARD_UPDATED`，event_context 含變更摘要）
 
 ## 刪除卡片（CARD_DELETED）
 
@@ -160,8 +160,8 @@ node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs --layer knowledge --event '{"even
    b. 透過 Bash tool 執行程式化索引更新（**不得直接 Read/Write vault-index.json**）：
 
       ```bash
-      node ${CLAUDE_PLUGIN_ROOT}/scripts/update-index.mjs delete-card '{"id":"<ID>"}'
+      node .claude/twinmind/bin/tm-update-index.mjs delete-card '{"id":"<ID>"}'
       ```
 
       腳本自動處理：移除 notes 條目、清理所有雙向連結引用（`links_to`/`linked_from`）、重算 `link_count`、重算 `stats.total_links`、更新 `stats.total_cards`/`stats.domains`/`stats.last_updated`
-   c. 執行 post-op（Bash tool，`node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs --layer knowledge --event '...'`，event_type 為 `CARD_DELETED`，event_context 含被刪卡片 title/path/domains）
+   c. 執行 post-op（Bash tool，`node .claude/twinmind/bin/tm-post-op.mjs --layer knowledge --event '...'`，event_type 為 `CARD_DELETED`，event_context 含被刪卡片 title/path/domains）

@@ -10,3 +10,6 @@ desktop.ini
 .claude/skills/openspec-*/
 .claude/commands/opsx/
 .claude/settings.local.json
+
+# TwinMind plugin runtime artifacts (generated per-vault by SessionStart hook)
+.claude/twinmind/

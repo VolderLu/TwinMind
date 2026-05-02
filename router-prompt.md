@@ -27,7 +27,7 @@
 
 **Step 4 — 衍生檔案新鮮度檢查**
 
-比較 `vault-index.json` 的 `stats.last_updated` 與 `<vault_dir>/Home.md` 及 `<vault_dir>/PARA/Dashboard.md` 的檔案修改時間。若任一衍生檔案的修改時間落後 `last_updated` 超過 60 秒，執行補償性 post-op（透過 Bash tool 調用 `node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs`）：
+比較 `vault-index.json` 的 `stats.last_updated` 與 `<vault_dir>/Home.md` 及 `<vault_dir>/PARA/Dashboard.md` 的檔案修改時間。若任一衍生檔案的修改時間落後 `last_updated` 超過 60 秒，執行補償性 post-op（透過 Bash tool 調用 `node .claude/twinmind/bin/tm-post-op.mjs`）：
 
 - Home.md 過期 → `--layer knowledge`
 - Dashboard.md 過期 → `--layer action`
@@ -106,7 +106,7 @@ Plan mode 下不執行 post-op Bash 調用。改為記錄 post-op payload，待 
 
 ### Post-op 規則
 
-狀態變更操作完成後，對應 skill 透過 **Bash tool** 執行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs` 觸發 post-op pipeline。Main agent 等待腳本完成（同步執行），腳本輸出 `post-op done | ...` 後再回應使用者。
+狀態變更操作完成後，對應 skill 透過 **Bash tool** 執行 `node .claude/twinmind/bin/tm-post-op.mjs` 觸發 post-op pipeline。Main agent 等待腳本完成（同步執行），腳本輸出 `post-op done | ...` 後再回應使用者。
 
 Post-op 腳本根據 `--layer` 參數執行不同收尾步驟：
 
@@ -125,7 +125,7 @@ Changelog 採用月度切檔（`<vault_dir>/System/changelog-YYYY-MM.md`）+ app
 #### 執行模式
 
 - **Background subagent**（非 post-op 任務）：透過 Agent tool 的 `run_in_background: true` 啟動。Main agent 不等待結果，立即回應使用者。
-- **Post-op**：透過 **Bash tool** 執行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs --layer <layer> --event '<JSON>'`。腳本同步執行，main agent 等待 exit code 再回應使用者。不使用 Agent tool。
+- **Post-op**：透過 **Bash tool** 執行 `node .claude/twinmind/bin/tm-post-op.mjs --layer <layer> --event '<JSON>'`。腳本同步執行，main agent 等待 exit code 再回應使用者。不使用 Agent tool。
 - **Link inference**：由 main agent inline 執行，不使用 subagent。Main agent 利用 session 啟動時已載入 context 的 vault-index.json notes 資料直接進行語意比對。
 
 #### Prompt Payload 格式
@@ -153,11 +153,11 @@ Main agent 解析回傳訊息判斷成功或失敗。回傳訊息不包含 file 
 序列：
 
 1. Main agent 寫入主要 artifact（卡片、專案檔案等）
-2. Main agent 執行程式化索引更新（Bash tool，`node ${CLAUDE_PLUGIN_ROOT}/scripts/update-index.mjs <command> '<JSON>'`）
-3. Main agent 執行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs`（Bash tool，同步）
+2. Main agent 執行程式化索引更新（Bash tool，`node .claude/twinmind/bin/tm-update-index.mjs <command> '<JSON>'`）
+3. Main agent 執行 `node .claude/twinmind/bin/tm-post-op.mjs`（Bash tool，同步）
 4. Main agent 回應使用者
 
-卡片 CRUD 操作（建立、更新、刪除）和連結建立，**不得直接使用 Edit 或 Write tool 修改 vault-index.json**，一律透過 `${CLAUDE_PLUGIN_ROOT}/scripts/update-index.mjs` 處理。腳本原子完成所有必要的 notes/stats 更新。
+卡片 CRUD 操作（建立、更新、刪除）和連結建立，**不得直接使用 Edit 或 Write tool 修改 vault-index.json**，一律透過 `.claude/twinmind/bin/tm-update-index.mjs` 處理。腳本原子完成所有必要的 notes/stats 更新。
 
 **Post-op 腳本不寫入 vault-index.json。** 腳本僅讀取 vault-index.json，寫入 changelog/MOC/Home/Dashboard。
 

@@ -28,13 +28,25 @@ Ask the user for customization (or accept defaults):
 
 ## Setup Steps
 
-1. Copy `${CLAUDE_PLUGIN_ROOT}/templates/TwinMind.md` to `<cwd>/TwinMind.md`
-2. Update frontmatter values based on user's choices (vault_dir, locale, domains)
-3. Copy `${CLAUDE_PLUGIN_ROOT}/templates/vault/` directory structure to `<cwd>/<vault_dir>/`
-   - Create all subdirectories: System/, Cards/, Sources/, Atlas/, PARA/Inbox/, PARA/Actions/, PARA/Projects/, PARA/Archive/, PARA/Areas/, PARA/Tasks/
-   - Copy initial files: System/vault-index.json, Home.md, PARA/Dashboard.md
-   - Skip directories/files that already exist
-4. Create `.gitignore` in vault root if not exists, with `.obsidian/` entry
+### Resolve Plugin Root
+
+Setup needs the plugin's absolute path to copy templates from. Read `<cwd>/.claude/twinmind/config.json` with the Read tool and use its `pluginRoot` field as `<plugin-root>` in the steps below.
+
+**Cold-start fallback**: if `<cwd>/.claude/twinmind/config.json` does not exist, the SessionStart hook has not run for this vault yet (TwinMind.md is required to trigger it). In that case:
+
+1. Use the Write tool to create `<cwd>/TwinMind.md` with minimal frontmatter (just `vault_dir: vault\nvault_name: TwinMind\nlocale: zh-TW`).
+2. Tell the user: "請執行 `exit` 退出 Claude Code，然後 `claude` 重新啟動 session (讓 SessionStart hook 寫入 plugin 路徑)，再次執行 `/setup` 完成餘下步驟。"
+3. Stop.
+
+### Copy and Customize
+
+1. Copy `<plugin-root>/templates/TwinMind.md` to `<cwd>/TwinMind.md`.
+2. Update frontmatter values based on user's choices (`vault_dir`, `locale`, `domains`).
+3. Copy `<plugin-root>/templates/vault/` directory structure to `<cwd>/<vault_dir>/`:
+   - Create all subdirectories: `System/`, `Cards/`, `Sources/`, `Atlas/`, `PARA/Inbox/`, `PARA/Actions/`, `PARA/Projects/`, `PARA/Archive/`, `PARA/Areas/`, `PARA/Tasks/`.
+   - Copy initial files: `System/vault-index.json`, `Home.md`, `PARA/Dashboard.md`.
+   - Skip directories/files that already exist.
+4. Create `.gitignore` in `<cwd>` if not exists, listing both `.obsidian/` and `.claude/twinmind/` (the latter holds plugin-generated shims that regenerate on every session start).
 
 ## Completion
 

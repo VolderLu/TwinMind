@@ -9,7 +9,7 @@ metadata:
 
 知識庫的維護和回顧工具。大多數操作是唯讀的（看看知識庫的狀態），但索引修復/重建會修改檔案。
 
-唯讀操作不需觸發 post-op。索引修復/重建完成後透過 Bash tool 執行 `node ${CLAUDE_PLUGIN_ROOT}/scripts/post-op.mjs --layer both --event '{"event_type":"INDEX_REBUILT","event_context":{}}'` 觸發 post-op pipeline。
+唯讀操作不需觸發 post-op。索引修復/重建完成後透過 Bash tool 執行 `node .claude/twinmind/bin/tm-post-op.mjs --layer both --event '{"event_type":"INDEX_REBUILT","event_context":{}}'` 觸發 post-op pipeline。
 
 ## 知識庫摘要（Vault Summary）
 
